@@ -1,0 +1,164 @@
+REGISTER USER
+    url:http://127.0.0.1:8000/api/bank/v1/register/
+    get:view all users
+    post:
+        sample input==>
+                    {
+                        "first_name": "binsha",
+                        "last_name": "v",
+                        "username": "binsha",
+                        "password": "binsha"
+                    }
+        sample output==>
+                {
+                    "first_name": "binsha",
+                    "last_name": "v",
+                    "username": "binsha",
+                    "password": "binsha"
+                }
+
+========================================================================
+
+LOGIN USER
+    url:http://127.0.0.1:8000/api/bank/v1/login/
+    post:
+        sample input==>
+                {
+                    "username": "yara",
+                    "password": "yara"
+                }
+        sample output==>
+                {
+                    "token": "0df6f4821d8051980ddc97b151b0abc417aa9b1d"
+                }
+===================================================================================
+CREATE ACCOUNT
+    url:http://127.0.0.1:8000/api/bank/v1/createacc/
+    get:
+        sample output==>
+                {
+                    "ac_num": 1002
+                }
+
+    post:
+        sample input==>
+                {
+                    "ac_num": 1002,
+                    "ac_type":"Current account",
+                    "balance":1000,
+                    "user":"aydin"
+
+                }
+        sample output==>
+                {
+                    "ac_num": 1002,
+                    "ac_type":"Current account",
+                    "balance":1000,
+                    "user":"aydin"
+
+                }
+============================================================
+DEPOSIT
+    url:http://127.0.0.1:8000/api/bank/v1/deposit/1000
+    put:
+        sample input==>
+            {
+                "amount":1000
+
+            }
+        sample output:
+            {
+                "hello user ": "1000is deposited and available balance is 6500"
+            }
+
+WITHDRAW
+    url:
+    put:
+        sample input==>
+            {
+                "amount":1000
+
+            }
+        sample outpur==>
+                {
+                    "hello user": "1000 is debited and available balance is 3500"
+                }
+
+======================================================================================
+ALL TRANSACTION HISTORY
+
+    URL:http://127.0.0.1:8000/api/bank/v1/all_transaction_view/
+    get:
+        sample output:show all all transaction
+
+==============================================================
+MONEY TRANSFER
+    url:http://127.0.0.1:8000/api/bank/v1/money_transfer/
+    post:
+        sample input:
+                {
+                    "from_ac_num": 2,
+                    "to_ac_num": "4590",
+                    "amount": 200,
+                    "debit_credit": "Credited"
+                }
+               status:not completed
+==========================================================================================
+
+
+TRANSACTION HISTORY BASED ON ACCOUNT NUMBER
+
+    url:http://127.0.0.1:8000/api/bank/v1/transaction/history/1000
+    get:
+    sample output==>
+        [
+        {
+            "from_ac_num": 1,
+            "to_ac_num": "1234",
+            "amount": 4000,
+            "debit_credit": "Credited"
+        },
+        {
+            "from_ac_num": 1,
+            "to_ac_num": "3456",
+            "amount": 2000,
+            "debit_credit": "Debited"
+        }
+        ]
+====================================================================================
+TRANSACTION HISTORY BASED ACCOUNT NUMBER AND CREDITED
+
+    URL:http://127.0.0.1:8000/api/bank/v1/transaction/credithistory/1000
+    get:
+        sample output==>
+                [
+                    {
+                        "from_ac_num": 1,
+                        "to_ac_num": "1234",
+                        "amount": 4000,
+                        "debit_credit": "Credited"
+                    }
+                ]
+============================================================================================
+TRANSACTION HISTORY BASED ACCOUNT NUMBER AND DEBITED
+
+    URL:http://127.0.0.1:8000/api/bank/v1/transaction/debitedhistory/1000
+    get:
+        sample output==>
+                [
+                    {
+                        "from_ac_num": 1,
+                        "to_ac_num": "1234",
+                        "amount": 4000,
+                        "debit_credit": "Debited"
+                    }
+                ]
+============================================================================================
+
+BALANCE CHECK OF ACCOUNT
+    url:http://127.0.0.1:8000/api/bank/v1/balancechk/1000
+    get:
+    sample output==>
+        {
+            "available balance is": "3500"
+        }
