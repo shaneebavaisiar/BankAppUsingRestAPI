@@ -19,10 +19,14 @@ class AccountSerializer(ModelSerializer):
         fields='__all__'
 
 
-class TransactionSeraializer(ModelSerializer):
-    class Meta:
-        model=Transaction
-        fields=['from_ac_num','to_ac_num','amount','debit_credit']
+class TransactionSeraializer(serializers.Serializer):
+    # class Meta:
+    #     model=Transaction
+    #     fields=['from_ac_num','to_ac_num','amount','debit_credit']
+    from_ac_num = serializers.CharField()
+    to_ac_num = serializers.CharField()
+    amount = serializers.IntegerField()
+    debit_credit =serializers.CharField()
 
 
 class DepositSerialiezer(serializers.Serializer):

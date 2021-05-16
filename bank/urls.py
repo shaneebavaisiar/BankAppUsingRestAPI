@@ -1,7 +1,7 @@
 
 from django.contrib import admin
 from django.urls import path
-from .views import UserRegistration,UserLogin,UserLogout,AccountCreate,Deposit,TransactionApi,MoneyTransfer,\
+from .views import UserRegistration,UserLogin,UserLogout,AccountCreate,Deposit,MoneyTransfer,\
     Withdraw,BalanceCheck,TransactionHistory,CreditedHistory,DebitHistory
 
 urlpatterns = [
@@ -12,7 +12,7 @@ urlpatterns = [
     path('createacc/',AccountCreate.as_view()),
     path('deposit/<int:acc>',Deposit.as_view()),
     path('withdraw/<int:acc>',Withdraw.as_view()),
-    path('all_transaction_view/',TransactionApi.as_view()),
+    # path('all_transaction_view/',TransactionApi.as_view()),
     path('money_transfer/',MoneyTransfer.as_view()),
     path('transaction/history/<int:acc>',TransactionHistory.as_view()),
     path('transaction/credithistory/<int:acc>',CreditedHistory.as_view()),

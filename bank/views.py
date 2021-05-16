@@ -108,18 +108,27 @@ class BalanceCheck(APIView):
 
 
 
-class TransactionApi(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
-    def get(self,request):
-        transaction=Transaction.objects.all()
-        serializer=TransactionSeraializer(transaction,many=True)
-        return Response(serializer.data)
+# class TransactionApi(APIView):
+#     # authentication_classes = [TokenAuthentication]
+#     # permission_classes = [IsAuthenticated]
+#     def get(self,request):
+#         transaction=Transaction.objects.all()
+#         serializer=TransactionSeraializer(transaction,many=True)
+#         return Response(serializer.data)
 
 
 class MoneyTransfer(APIView):
+    # authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
+    def get(self, request):
+        transaction = Transaction.objects.all()
+        serializer = TransactionSeraializer(transaction, many=True)
+        return Response(serializer.data)
+
     def post(self, request):
         serializer=TransactionSeraializer(data=request.data)
+        print(request.data)
+        print(serializer)
         if serializer.is_valid():
             from_ac_num=serializer.validated_data.get("from_ac_num")
             to_ac_num=serializer.validated_data.get("to_ac_num")
@@ -129,7 +138,16 @@ class MoneyTransfer(APIView):
             if acc:
                 transfer=Transaction(from_ac_num=acc,to_ac_num=to_ac_num,amount=amount,debit_credit=debit_credit)
                 transfer.save()
-                print('saved')
+                if debit_credit=='Debited':
+                    if acc.balance>amount:
+                        acc.balance-=amount
+                        acc.save()
+                    else:
+                        return Response('no available balance')
+                elif debit_credit=='Credited':
+                    acc.balance+=amount
+                    acc.save()
+
                 return Response('sucess')
             else:
                 return Response('no accout')

@@ -85,15 +85,11 @@ WITHDRAW
                 }
 
 ======================================================================================
-ALL TRANSACTION HISTORY
 
-    URL:http://127.0.0.1:8000/api/bank/v1/all_transaction_view/
-    get:
-        sample output:show all all transaction
-
-==============================================================
 MONEY TRANSFER
     url:http://127.0.0.1:8000/api/bank/v1/money_transfer/
+    get:
+        sample output:show all all transaction
     post:
         sample input:
                 {
