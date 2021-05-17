@@ -10,7 +10,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from bank.models import Accounts,Transaction
 from rest_framework.permissions import IsAuthenticated
-from django.http import HttpResponse
+
 
 # =====================================user============================================
 class UserRegistration(generics.GenericAPIView,mixins.CreateModelMixin,mixins.ListModelMixin):
@@ -42,8 +42,8 @@ class UserLogout(APIView):
 # ============================================end user======================================
 
 class AccountCreate(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self,request):
         account=Accounts.objects.all().last()
@@ -62,8 +62,8 @@ class AccountCreate(APIView):
 
 
 class Deposit(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def put(self,request,acc):
         serializer=DepositSerialiezer(data=request.data)
@@ -80,8 +80,8 @@ class Deposit(APIView):
             return Response('failed')
 
 class Withdraw(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def put(self,request,acc):
         serializer=DepositSerialiezer(data=request.data)
@@ -101,6 +101,8 @@ class Withdraw(APIView):
             return Response('failed')
 
 class BalanceCheck(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self,request,acc):
         acc=Accounts.objects.get(ac_num=acc)
         balance=acc.balance
@@ -108,18 +110,9 @@ class BalanceCheck(APIView):
 
 
 
-# class TransactionApi(APIView):
-#     # authentication_classes = [TokenAuthentication]
-#     # permission_classes = [IsAuthenticated]
-#     def get(self,request):
-#         transaction=Transaction.objects.all()
-#         serializer=TransactionSeraializer(transaction,many=True)
-#         return Response(serializer.data)
-
-
 class MoneyTransfer(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         transaction = Transaction.objects.all()
         serializer = TransactionSeraializer(transaction, many=True)
@@ -142,19 +135,21 @@ class MoneyTransfer(APIView):
                     if acc.balance>amount:
                         acc.balance-=amount
                         acc.save()
+                        return Response({"Hello user":str(amount)+' has been debited and available balance:'+str(acc.balance)})
                     else:
                         return Response('no available balance')
                 elif debit_credit=='Credited':
                     acc.balance+=amount
                     acc.save()
-
-                return Response('sucess')
+                    return Response({"Hello user": str(amount) + ' has been credited and available balance:' + str(acc.balance)})
             else:
                 return Response('no accout')
         else:
             return Response('failed')
 
 class TransactionHistory(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self,request,acc):
         # account=Accounts.objects.get(ac_num=acc)
         transaction_history=Transaction.objects.filter(from_ac_num__ac_num=acc)
@@ -162,12 +157,16 @@ class TransactionHistory(APIView):
         return Response(serializer.data)
 
 class CreditedHistory(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self,reequest,acc):
         transaction_history = Transaction.objects.filter(from_ac_num__ac_num=acc).filter(debit_credit__exact="Credited")
         serializer = TransactionSeraializer(transaction_history, many=True)
         return Response(serializer.data)
 
 class DebitHistory(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self, reequest, acc):
         transaction_history = Transaction.objects.filter(from_ac_num__ac_num=acc).filter(debit_credit__exact="Debited")
         serializer = TransactionSeraializer(transaction_history, many=True)

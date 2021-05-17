@@ -93,7 +93,7 @@ MONEY TRANSFER
     post:
         sample input:
                 {
-                    "from_ac_num": 2,
+                    "from_ac_num": 1000,
                     "to_ac_num": "4590",
                     "amount": 200,
                     "debit_credit": "Credited"
