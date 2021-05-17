@@ -27,8 +27,15 @@ class TransactionSeraializer(serializers.Serializer):
     to_ac_num = serializers.CharField()
     amount = serializers.IntegerField()
     debit_credit =serializers.CharField()
+    email=serializers.CharField()
 
 
 class DepositSerialiezer(serializers.Serializer):
     # ac_num=serializers.IntegerField()
     amount=serializers.IntegerField()
+    email=serializers.CharField()
+
+
+
+# class SendMailSerializer(serializers.Serializer):
+#     email=serializers.CharField(max_length=123)

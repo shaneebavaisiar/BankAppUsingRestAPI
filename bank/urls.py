@@ -17,7 +17,8 @@ urlpatterns = [
     path('transaction/history/<int:acc>',TransactionHistory.as_view()),
     path('transaction/credithistory/<int:acc>',CreditedHistory.as_view()),
     path("transaction/debitedhistory/<int:acc>",DebitHistory.as_view()),
-    path('balancechk/<int:acc>',BalanceCheck.as_view())
+    path('balancechk/<int:acc>',BalanceCheck.as_view()),
+    # path('sendmail/',SendMail.as_view())
 ]
 
 

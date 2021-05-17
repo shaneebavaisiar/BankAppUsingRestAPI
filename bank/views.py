@@ -10,9 +10,9 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from bank.models import Accounts,Transaction
 from rest_framework.permissions import IsAuthenticated
+from django.core.mail import send_mail
+from django.conf import settings
 
-
-# =====================================user============================================
 class UserRegistration(generics.GenericAPIView,mixins.CreateModelMixin,mixins.ListModelMixin):
     queryset = User.objects.all()
     serializer_class = UserRegSerializer
@@ -20,7 +20,6 @@ class UserRegistration(generics.GenericAPIView,mixins.CreateModelMixin,mixins.Li
         return self.list(request,*args,**kwargs)
     def post(self,request,*args,**kwargs):
         return self.create(request, *args, **kwargs)
-
 class UserLogin(APIView):
     def post(self,request):
         serializer=LoginSerializer(data=request.data)
@@ -34,13 +33,11 @@ class UserLogin(APIView):
                 token,created=Token.objects.get_or_create(user=user)
                 return Response({'token':token.key},status=204)
             return Response('failed')
-
 class UserLogout(APIView):
     def get(self,request):
         logout(request)
         request.user.auth_token.delete()
 # ============================================end user======================================
-
 class AccountCreate(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -59,8 +56,6 @@ class AccountCreate(APIView):
             serializer.save()
             return Response(serializer.data,status=201)
         return Response(serializer.errors,status=401)
-
-
 class Deposit(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -78,7 +73,6 @@ class Deposit(APIView):
                 return Response('no accout nbr')
         else:
             return Response('failed')
-
 class Withdraw(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -99,7 +93,6 @@ class Withdraw(APIView):
                 return Response('no account nbr')
         else:
             return Response('failed')
-
 class BalanceCheck(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -107,9 +100,6 @@ class BalanceCheck(APIView):
         acc=Accounts.objects.get(ac_num=acc)
         balance=acc.balance
         return Response({'available balance is':str(balance)})
-
-
-
 class MoneyTransfer(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -127,26 +117,33 @@ class MoneyTransfer(APIView):
             to_ac_num=serializer.validated_data.get("to_ac_num")
             amount=serializer.validated_data.get("amount")
             debit_credit=serializer.validated_data.get("debit_credit")
+            emails = serializer.validated_data.get('email')
             acc = Accounts.objects.get(ac_num=from_ac_num)
             if acc:
                 transfer=Transaction(from_ac_num=acc,to_ac_num=to_ac_num,amount=amount,debit_credit=debit_credit)
                 transfer.save()
+                date=transfer.transaction_date
                 if debit_credit=='Debited':
                     if acc.balance>amount:
                         acc.balance-=amount
                         acc.save()
+                        msg = f'Your a/c no.1000 has been credited for Rs.{amount}.00 ' \
+                              f'on {date} towords beneficiary a/c no.{to_ac_num} and avail.bal INR {acc.balance}'
+                        send_mail('BankApp', msg, settings.EMAIL_HOST_USER, [emails], fail_silently=False)
                         return Response({"Hello user":str(amount)+' has been debited and available balance:'+str(acc.balance)})
                     else:
                         return Response('no available balance')
                 elif debit_credit=='Credited':
                     acc.balance+=amount
                     acc.save()
+                    msg = f'Your a/c no.1000 has been credited for Rs.{amount}.00 ' \
+                          f'on {date} towords beneficiary a/c no.{to_ac_num} and avail.bal INR {acc.balance}'
+                    send_mail('BankApp', msg, settings.EMAIL_HOST_USER, [emails], fail_silently=False)
                     return Response({"Hello user": str(amount) + ' has been credited and available balance:' + str(acc.balance)})
             else:
                 return Response('no accout')
         else:
             return Response('failed')
-
 class TransactionHistory(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -155,7 +152,6 @@ class TransactionHistory(APIView):
         transaction_history=Transaction.objects.filter(from_ac_num__ac_num=acc)
         serializer=TransactionSeraializer(transaction_history,many=True)
         return Response(serializer.data)
-
 class CreditedHistory(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -163,7 +159,6 @@ class CreditedHistory(APIView):
         transaction_history = Transaction.objects.filter(from_ac_num__ac_num=acc).filter(debit_credit__exact="Credited")
         serializer = TransactionSeraializer(transaction_history, many=True)
         return Response(serializer.data)
-
 class DebitHistory(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -173,7 +168,11 @@ class DebitHistory(APIView):
         return Response(serializer.data)
 
 
-
-
-
-
+# class SendMail(APIView):
+#     def post(self,request):
+#         serializer=SendMailSerializer(data=request.data)
+#         if serializer.is_valid():
+#             emails=serializer.validated_data.get('email')
+#             send_mail('BankApp','test mail',settings.EMAIL_HOST_USER,[emails],fail_silently=False)
+#             return Response('mail send')
+#         return Response('fail')
